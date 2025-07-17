@@ -470,27 +470,7 @@
             transform: scale(1.05);
         }
 
-        .show-more-btn {
-            display: block;
-            margin: 50px auto 0;
-            padding: 15px 40px;
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            border-radius: 50px;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(108, 77, 246, 0.3);
-        }
-
-        .show-more-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(108, 77, 246, 0.4);
-        }
-
+        
         /* Artwork Modal */
         .artwork-modal {
             position: fixed;
@@ -1307,7 +1287,7 @@
             </div>
         </div>
         
-        <button class="show-more-btn" id="showMoreBtn">Show All Artworks</button>
+        <!-- <button class="show-more-btn" id="showMoreBtn">Show All Artworks</button> -->
     </section>
 
     <!-- Enhanced Contact Section -->
@@ -1603,12 +1583,16 @@ document.addEventListener('DOMContentLoaded', function() {
     closeModal.addEventListener('click', function() {
         artworkModal.classList.remove('active');
         document.body.style.overflow = 'auto';
+        // Replace current state with non-modal state
+        history.replaceState(null, '', window.location.pathname);
     });
 
     artworkModal.addEventListener('click', function(e) {
         if (e.target === artworkModal) {
             artworkModal.classList.remove('active');
             document.body.style.overflow = 'auto';
+            // Replace current state with non-modal state
+            history.replaceState(null, '', window.location.pathname);
         }
     });
 
@@ -1643,36 +1627,36 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Show More Artworks Button
-    const showMoreBtn = document.getElementById('showMoreBtn');
-    const hiddenArtworks = document.querySelectorAll('.hidden-artwork');
-    let showAll = false;
-
-    showMoreBtn.addEventListener('click', function() {
-        showAll = !showAll;
-        
-        if (showAll) {
-            hiddenArtworks.forEach(artwork => {
-                artwork.style.display = 'block';
-                artwork.style.opacity = '0';
-                artwork.style.transform = 'translateY(20px)';
-                
-                // Animate in
-                setTimeout(() => {
-                    artwork.style.opacity = '1';
-                    artwork.style.transform = 'translateY(0)';
-                }, 100);
-            });
-            
-            this.textContent = 'Show Less';
-        } else {
-            hiddenArtworks.forEach(artwork => {
-                artwork.style.display = 'none';
-            });
-            
-            this.textContent = 'Show All Artworks';
+    // Add this to your existing JavaScript
+    window.addEventListener('popstate', function(event) {
+        const artworkModal = document.querySelector('.artwork-modal');
+        if (artworkModal.classList.contains('active')) {
+            artworkModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            // Prevent default back behavior
+            history.pushState(null, null, window.location.pathname);
         }
     });
+
+    // Modify the openArtworkModal function to push state to history
+    function openArtworkModal(imgSrc, title, description) {
+        const modalImage = artworkModal.querySelector('.modal-image img');
+        const modalTitle = artworkModal.querySelector('.artwork-title');
+        const modalDescription = artworkModal.querySelector('.artwork-description');
+        
+        // Set artwork details
+        modalImage.src = imgSrc;
+        modalImage.alt = title;
+        modalTitle.textContent = title;
+        modalDescription.textContent = description;
+        
+        // Show modal
+        artworkModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        
+        // Push state to history
+        history.pushState({ modalOpen: true }, '', window.location.pathname);
+    }
 
     // Animate elements on scroll
     function animateArtworkCards() {
